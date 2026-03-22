@@ -3,176 +3,176 @@
   "system": [
     {
       "oid": "1.3.6.1.4.1.55555.1.1.0",
-      "tag": "4",
+      "tag": 4,
       "value": "RF Receiver (Radio Frequency Receiver)"
     },
     {
       "oid": "1.3.6.1.4.1.55555.1.2.0",
-      "tag": "4",
+      "tag": 4,
       "value": "123-456-789"
     },
     {
       "oid": "1.3.6.1.4.1.55555.1.3.0",
-      "tag": "4",
+      "tag": 4,
       "value": "1.2.5"
     },
     {
       "oid": "1.3.6.1.4.1.55555.1.4.0",
-      "tag": "4",
+      "tag": 4,
       "value": "1.0.0"
     }
   ],
   "metrics": [
     {
       "oid": "1.3.6.1.4.1.55555.3.1.1.<slotId>.1.0",
-      "tag": "4",
+      "tag": 4,
       "value": "Temperature"
     },
     {
       "oid": "1.3.6.1.4.1.55555.3.1.2.<slotId>.1.0",
-      "tag": "2",
+      "tag": 2,
       "value": "45"
     },
     {
       "oid": "1.3.6.1.4.1.55555.3.1.3.<slotId>.1.0",
-      "tag": "4",
+      "tag": 4,
       "value": "°C"
     },
     {
       "oid": "1.3.6.1.4.1.55555.3.1.1.<slotId>.2.0",
-      "tag": "4",
+      "tag": 4,
       "value": "Received Signal Strength Indicator (RSSI)"
     },
     {
       "oid": "1.3.6.1.4.1.55555.3.1.2.<slotId>.2.0",
-      "tag": "2",
+      "tag": 2,
       "value": "-50"
     },
     {
       "oid": "1.3.6.1.4.1.55555.3.1.3.<slotId>.2.0",
-      "tag": "4",
+      "tag": 4,
       "value": "dBm"
     },
     {
       "oid": "1.3.6.1.4.1.55555.3.1.1.<slotId>.3.0",
-      "tag": "4",
+      "tag": 4,
       "value": "Signal-to-Noise Ratio (SNR)"
     },
     {
       "oid": "1.3.6.1.4.1.55555.3.1.2.<slotId>.3.0",
-      "tag": "2",
+      "tag": 2,
       "value": "30"
     },
     {
       "oid": "1.3.6.1.4.1.55555.3.1.3.<slotId>.3.0",
-      "tag": "4",
+      "tag": 4,
       "value": "dB"
     },
     {
       "oid": "1.3.6.1.4.1.55555.3.1.1.<slotId>.4.0",
-      "tag": "4",
+      "tag": 4,
       "value": "Bit Error Rate (BER)"
     },
     {
       "oid": "1.3.6.1.4.1.55555.3.1.2.<slotId>.4.0",
-      "tag": "2",
+      "tag": 2,
       "value": "1"
     },
     {
       "oid": "1.3.6.1.4.1.55555.3.1.3.<slotId>.4.0",
-      "tag": "4",
+      "tag": 4,
       "value": "%"
     },
     {
       "oid": "1.3.6.1.4.1.55555.3.1.1.<slotId>.5.0",
-      "tag": "4",
+      "tag": 4,
       "value": "Center Frequency"
     },
     {
       "oid": "1.3.6.1.4.1.55555.3.1.2.<slotId>.5.0",
-      "tag": "2",
+      "tag": 2,
       "value": "2415"
     },
     {
       "oid": "1.3.6.1.4.1.55555.3.1.3.<slotId>.5.0",
-      "tag": "4",
+      "tag": 4,
       "value": "MHz"
     }
   ],
   "alarms": [
     {
       "oid": "1.3.6.1.4.1.55555.4.1.1.<slotId>.1.0",
-      "tag": "4",
+      "tag": 4,
       "value": "TEMPERATURE_ALARM"
     },
     {
       "oid": "1.3.6.1.4.1.55555.4.1.2.<slotId>.1.0",
-      "tag": "2",
+      "tag": 2,
       "value": "1"
     },
     {
       "oid": "1.3.6.1.4.1.55555.4.1.3.<slotId>.1.0",
-      "tag": "2",
+      "tag": 2,
       "value": "1"
     },
     {
       "oid": "1.3.6.1.4.1.55555.4.1.1.<slotId>.2.0",
-      "tag": "4",
+      "tag": 4,
       "value": "RSSI_ALARM"
     },
     {
       "oid": "1.3.6.1.4.1.55555.4.1.2.<slotId>.2.0",
-      "tag": "2",
+      "tag": 2,
       "value": "1"
     },
     {
       "oid": "1.3.6.1.4.1.55555.4.1.3.<slotId>.2.0",
-      "tag": "2",
+      "tag": 2,
       "value": "4"
     },
     {
       "oid": "1.3.6.1.4.1.55555.4.1.1.<slotId>.3.0",
-      "tag": "4",
+      "tag": 4,
       "value": "SNR_ALARM"
     },
     {
       "oid": "1.3.6.1.4.1.55555.4.1.2.<slotId>.3.0",
-      "tag": "2",
+      "tag": 2,
       "value": "0"
     },
     {
       "oid": "1.3.6.1.4.1.55555.4.1.3.<slotId>.3.0",
-      "tag": "2",
+      "tag": 2,
       "value": "1"
     },
     {
       "oid": "1.3.6.1.4.1.55555.4.1.1.<slotId>.4.0",
-      "tag": "4",
+      "tag": 4,
       "value": "BER_ALARM"
     },
     {
       "oid": "1.3.6.1.4.1.55555.4.1.2.<slotId>.4.0",
-      "tag": "2",
+      "tag": 2,
       "value": "0"
     },
     {
       "oid": "1.3.6.1.4.1.55555.4.1.3.<slotId>.4.0",
-      "tag": "2",
+      "tag": 2,
       "value": "1"
     },
     {
       "oid": "1.3.6.1.4.1.55555.4.1.1.<slotId>.5.0",
-      "tag": "4",
+      "tag": 4,
       "value": "CENTER_FREQUENCY_ALARM"
     },
     {
       "oid": "1.3.6.1.4.1.55555.4.1.2.<slotId>.5.0",
-      "tag": "2",
+      "tag": 2,
       "value": "1"
     },
     {
       "oid": "1.3.6.1.4.1.55555.4.1.3.<slotId>.5.0",
-      "tag": "2",
+      "tag": 2,
       "value": "2"
     }
   ]
