@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Lextm.SharpSnmpLib" Version="13.0.0-beta.2" />
       <PackageReference Include="Spectre.Console.Cli" Version="0.53.1" />
     </ItemGroup>
 

@@ -4,7 +4,7 @@ using Spectre.Console.Cli;
 var app = new CommandApp();
 app.Configure(config =>
 {
-    config.AddCommand<GreetCommand>("greet")
-        .WithDescription("Greet someone with a message.");
+    config.AddCommand<StartDeviceCommand>("startDevice")
+        .WithDescription("Instantiate a number of device.");
 });
-return app.Run(args);
+return await app.RunAsync(args);
