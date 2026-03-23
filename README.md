@@ -10,55 +10,35 @@ dotnet run --project "C:\Users\rifaut\Desktop\work\clone\snmp-simulator\SnmpSimu
 
 Optional command options:
 
-- `--config-dir <path>`: path to the config root directory (default: `configDevice`)
+- `--module-ids <csv>`: comma-separated module IDs by slot order (example: `0,1,2,1`)
+  - each value has an index in the list, and `slot = index + 1`
+  - `0` means an empty slot (no module loaded for that slot)
+  - any non-zero value is matched against a module file root `id`
 - `--read-community <value>`: SNMP read community (default: `public`)
 - `--write-community <value>`: SNMP write community (default: `private`)
 
-## Config Structure (`configDevice`)
+## Config Structure (`config-devices`)
 
 The simulator reads:
 
-- `configDevice/system.json`
-- all `configDevice/modules/*.json` files (sorted by filename)
+- `config-devices/system.json`
+- all `config-devices/modules/*.json` files (indexed by root `id`)
 
-If the same OID appears multiple times, later module files override earlier values.
-After each successful load/reload, a merged output file is generated: `device-config.snmprec`.
+Each selected non-zero module ID from `--module-ids` maps to one slot.
+`0` keeps the slot empty.
+The `<slotId>` placeholder is replaced with the one-based slot index.
+Module files must have unique root `id` values.
+After each successful load, a merged output file is generated: `device-config.snmprec`.
 
 Example layout:
 
 ```text
-configDevice/
+config-devices/
   system.json
   modules/
     module01.json
     module02.json
 device-config.snmprec
-```
-
-`system.json` entry example:
-
-```json
-{
-  "sysDescr": {
-    "oid": "1.3.6.1.4.1.1.1.0",
-    "tag": "4",
-    "value": "SNMP Simulator Device"
-  }
-}
-```
-
-`modules/module01.json` entry example:
-
-```json
-{
-  "metrics": [
-    {
-      "oid": "1.3.6.1.4.1.9999.1.2.1.0",
-      "tag": "2",
-      "value": "42"
-    }
-  ]
-}
 ```
 
 Supported SNMP ASN.1 `tag` values:
@@ -71,10 +51,6 @@ Supported SNMP ASN.1 `tag` values:
 - `67` (TimeTicks)
 - `70` (Counter64)
 
-## Live Reload
-
-The simulator watches `configDevice` recursively. Creating, updating, renaming, or deleting `system.json` or files under
-`modules/*.json` triggers a hot reload and regenerates `device-config.snmprec`.
 
 ## OID Definitions
 
