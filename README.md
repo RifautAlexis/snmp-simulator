@@ -5,7 +5,7 @@ A small SNMP simulator built on .NET and SharpSnmpLib.
 ## Run
 
 ```powershell
-dotnet run --project "C:\Users\rifaut\Desktop\work\clone\snmp-simulator\SnmpSimulator.csproj" -- startDevice
+dotnet run -- startDevice --help
 ```
 
 Optional command options:
