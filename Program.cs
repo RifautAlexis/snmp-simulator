@@ -5,6 +5,8 @@ var app = new CommandApp();
 app.Configure(config =>
 {
     config.AddCommand<StartDeviceCommand>("startDevice")
-        .WithDescription("Instantiate a number of device.");
+        .WithDescription("Instantiate a single device.");
+    config.AddCommand<StartDevicesCommand>("startDevices")
+        .WithDescription("Instantiate multiple devices.");
 });
 return await app.RunAsync(args);
