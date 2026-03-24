@@ -8,12 +8,14 @@ namespace SnmpSimulator;
 
 public class SnmpAgent
 {
+    private const uint SysUpTimeTickIncrement = 100;
     private static readonly UserRegistry Users = new();
     private readonly IPEndPoint _endpoint;
     private readonly SnmpStore _store;
     private readonly UdpClient _udp;
     private readonly string _readCommunity;
     private readonly string _writeCommunity;
+    private bool _sysUpTimeWarningLogged;
 
     public SnmpAgent(string ip, int port, SnmpStore store, string readCommunity, string writeCommunity)
     {
@@ -27,6 +29,7 @@ public class SnmpAgent
     public async Task StartAsync()
     {
         Console.WriteLine($"SNMP Agent listening on {_endpoint}");
+        _ = Task.Run(RunSysUpTimeTickerAsync);
 
         while (true)
         {
@@ -78,6 +81,35 @@ public class SnmpAgent
                     await HandleSet(request, result.RemoteEndPoint);
                 }
             }
+        }
+    }
+
+    private async Task RunSysUpTimeTickerAsync()
+    {
+        try
+        {
+            using var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+
+            while (await timer.WaitForNextTickAsync())
+            {
+                if (_store.TryIncrementTimeTicks(Constants.SysUpTimeOid, SysUpTimeTickIncrement))
+                {
+                    continue;
+                }
+
+                if (_sysUpTimeWarningLogged)
+                {
+                    continue;
+                }
+
+                _sysUpTimeWarningLogged = true;
+                Console.WriteLine(
+                    $"Unable to increment {Constants.SysUpTimeOid}: OID is missing or not a TimeTicks value.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"sysUpTime ticker stopped: {ex.Message}");
         }
     }
 

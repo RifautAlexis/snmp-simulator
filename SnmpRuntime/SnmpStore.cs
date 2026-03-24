@@ -58,6 +58,26 @@ public class SnmpStore
         }
     }
 
+    public bool TryIncrementTimeTicks(string oid, uint increment)
+    {
+        lock (_sync)
+        {
+            if (!_store.TryGetValue(oid, out var sysUpTime))
+            {
+                return false;
+            }
+
+            if (sysUpTime.Value is not TimeTicks current)
+            {
+                return false;
+            }
+
+            var nextValue = unchecked(current.Value + increment);
+            sysUpTime.Value = new TimeTicks(nextValue);
+            return true;
+        }
+    }
+
     public SnmpObject? GetNext(string oid)
     {
         lock (_sync)
