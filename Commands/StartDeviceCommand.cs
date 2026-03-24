@@ -29,7 +29,6 @@ public class StartDeviceCommand : AsyncCommand<StartDeviceSettings>
     public override async Task<int> ExecuteAsync(CommandContext context, StartDeviceSettings settings, CancellationToken cancellation)
     {
         var configDirectory = Path.GetFullPath(Constants.ConfigDirectory);
-        var outputPath = Path.Combine(Directory.GetParent(configDirectory)?.FullName ?? Directory.GetCurrentDirectory(), Constants.OutputFileName);
 
         var moduleIds = string.IsNullOrWhiteSpace(settings.ModuleIds)
             ? Array.Empty<int>()
@@ -39,7 +38,7 @@ public class StartDeviceCommand : AsyncCommand<StartDeviceSettings>
                 .ToArray();
 
 
-        LoadConfigIntoStore(configDirectory, outputPath, moduleIds);
+        LoadConfigIntoStore(configDirectory, moduleIds);
 
         if (moduleIds.Length > 0)
         {
@@ -52,7 +51,6 @@ public class StartDeviceCommand : AsyncCommand<StartDeviceSettings>
 
         AnsiConsole.MarkupLine($"[yellow]Read - Write community:[/] {settings.ReadCommunity} - {settings.WriteCommunity}");
         AnsiConsole.MarkupLine($"[yellow]Device config found in directory:[/] {configDirectory}");
-        AnsiConsole.MarkupLine($"[yellow]Device config created at :[/] {outputPath}");
 
         var agent = new SnmpAgent("127.0.0.1", 161, _store, settings.ReadCommunity, settings.WriteCommunity);
 
@@ -61,9 +59,9 @@ public class StartDeviceCommand : AsyncCommand<StartDeviceSettings>
         return 0;
     }
 
-    private void LoadConfigIntoStore(string configDirectory, string outputPath, int[] moduleIds)
+    private void LoadConfigIntoStore(string configDirectory, int[] moduleIds)
     {
-        var objects = DeviceConfigLoader.LoadFromConfigDevice(configDirectory, outputPath, moduleIds);
+        var objects = DeviceConfigLoader.LoadFromConfigDevice(configDirectory, moduleIds);
         _store.ReplaceAll(objects);
     }
 }

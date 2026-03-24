@@ -13,10 +13,9 @@ public sealed class DeviceConfigEntry
 public static class DeviceConfigLoader
 {
     /// <summary>
-    /// Loads system and selected module JSON configs, writes the output .snmprec file, and returns SNMP objects.
+    /// Loads system and selected module JSON configs and returns SNMP objects.
     /// </summary>
-    public static IReadOnlyCollection<SnmpObject> LoadFromConfigDevice(string configDeviceDirectory,
-        string outputFilePath, int[] selectedModuleIds)
+    public static IReadOnlyCollection<SnmpObject> LoadFromConfigDevice(string configDeviceDirectory, int[] selectedModuleIds)
     {
         var configRoot = Path.GetFullPath(configDeviceDirectory);
         DeviceConfigFileService.ValidateConfigLayout(configRoot);
@@ -37,9 +36,8 @@ public static class DeviceConfigLoader
         deviceOidList.AddRange(systemEntries);
         deviceOidList.AddRange(modulesEntries);
 
-        var (snmpDataList, snmpObjectList) = SnmpOutputBuilder.BuildSnmpOutputs(deviceOidList);
-
-        DeviceConfigFileService.WriteSnmprecConfig(outputFilePath, snmpDataList);
+        var snmpObjectList = SnmpOutputBuilder.BuildSnmpOutputs(deviceOidList);
+        
         return snmpObjectList;
     }
 }

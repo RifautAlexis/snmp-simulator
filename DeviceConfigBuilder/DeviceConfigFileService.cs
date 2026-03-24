@@ -30,20 +30,6 @@ public static class DeviceConfigFileService
     }
 
     /// <summary>
-    /// Writes SNMPREC output lines to disk, creating the output directory when needed.
-    /// </summary>
-    public static void WriteSnmprecConfig(string outputPath, IReadOnlyList<string> entries)
-    {
-        var fullOutputPath = Path.GetFullPath(outputPath);
-        var outputDirectory = Path.GetDirectoryName(fullOutputPath);
-
-        if (!string.IsNullOrWhiteSpace(outputDirectory))
-            Directory.CreateDirectory(outputDirectory);
-
-        File.WriteAllLines(fullOutputPath, entries);
-    }
-
-    /// <summary>
     /// Returns true when a file has no content or only whitespace characters.
     /// </summary>
     private static bool IsFileEmptyOrWhitespace(string filePath)

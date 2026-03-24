@@ -28,7 +28,7 @@ Each selected non-zero module ID from `--module-ids` maps to one slot.
 `0` keeps the slot empty.
 The `<slotId>` placeholder is replaced with the one-based slot index.
 Module files must have unique root `id` values.
-After each successful load, a merged output file is generated: `device-config.snmprec`.
+After each successful load, entries are normalized and loaded into the in-memory SNMP store.
 
 Example layout:
 
@@ -38,7 +38,6 @@ config-devices/
   modules/
     module01.json
     module02.json
-device-config.snmprec
 ```
 
 Supported SNMP ASN.1 `tag` values:
