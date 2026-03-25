@@ -5,17 +5,16 @@ A small SNMP simulator built on .NET and SharpSnmpLib.
 ## Run
 
 ```powershell
-dotnet run -- startDevice --help
+dotnet run -- startDevices --help
 ```
 
-Available commands:
+Available command:
 
-- `startDevice`
 - `startDevices`
 
 ## Build and Distribute (Windows + Linux)
 
-Publish one folder per target OS/runtime. The command names stay the same (`startDevice`, `startDevices`).
+Publish one folder per target OS/runtime.
 
 ### Windows build
 
@@ -38,24 +37,20 @@ Run examples from each publish folder:
 
 ```powershell
 .\SnmpSimulator.exe startDevices .\config-devices\devices.json
-.\SnmpSimulator.exe startDevice --module-ids 1,2 --read-community public --write-community private
 ```
 
 ### Linux run
 
 ```bash
 ./SnmpSimulator startDevices ./config-devices/devices.json
-./SnmpSimulator startDevice --module-ids 1,2 --read-community public --write-community private
 ```
 
-Optional command options:
+`startDevices` arguments:
 
-- `--module-ids <csv>`: comma-separated module IDs by slot order (example: `0,1,2,1`)
-  - each value has an index in the list, and `slot = index + 1`
-  - `0` means an empty slot (no module loaded for that slot)
-  - any non-zero value is matched against a module file root `id`
-- `--read-community <value>`: SNMP read community (default: `public`)
-- `--write-community <value>`: SNMP write community (default: `private`)
+- `[config]`: path to the devices JSON array file (required)
+- `[ipaddress]`: base IP address (optional, default: `127.0.0.1`)
+
+To simulate a single device, keep only one element in `devices.json`.
 
 ## Config Structure (`config-devices`)
 
