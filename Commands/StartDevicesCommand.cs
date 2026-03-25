@@ -25,7 +25,7 @@ public partial class DeviceConfigContext : JsonSerializerContext
 
 public class StartDevicesSettings : CommandSettings
 {
-    [CommandArgument(0, "[config]")]
+    [CommandArgument(0, "<config>")]
     [Description("Path to JSON configuration file containing device configurations")]
     public string ConfigFile { get; init; } = "";
 
@@ -33,6 +33,11 @@ public class StartDevicesSettings : CommandSettings
     [Description("Base IP address for devices (default: 127.0.0.1, last octet will be incremented)")]
     [DefaultValue("127.0.0.1")]
     public string IpAddress { get; init; } = "127.0.0.1";
+
+    [CommandArgument(2, "[port]")]
+    [Description("SNMP UDP port used by all devices (default: 161)")]
+    [DefaultValue(161)]
+    public int Port { get; init; } = 161;
 }
 
 public class StartDevicesCommand : AsyncCommand<StartDevicesSettings>
@@ -80,8 +85,15 @@ public class StartDevicesCommand : AsyncCommand<StartDevicesSettings>
             return 1;
         }
 
+        if (settings.Port is < 1 or > 65535)
+        {
+            AnsiConsole.MarkupLine($"[red]Error:[/] Invalid port: {settings.Port}. Expected range is 1-65535");
+            return 1;
+        }
+
         AnsiConsole.MarkupLine($"[yellow]Starting {deviceConfigs.Count} device(s)[/]");
         AnsiConsole.MarkupLine($"[yellow]Base IP address:[/] {settings.IpAddress}");
+        AnsiConsole.MarkupLine($"[yellow]Port:[/] {settings.Port}");
         AnsiConsole.MarkupLine($"[yellow]Device config found in directory:[/] {configDirectory}");
 
         var tasks = new List<Task>();
@@ -93,8 +105,8 @@ public class StartDevicesCommand : AsyncCommand<StartDevicesSettings>
             var store = new SnmpStore();
             LoadConfigIntoStore(configDirectory, deviceConfig.ModuleIds, store);
 
-            var agent = new SnmpAgent(ipAddress, 161, store, deviceConfig.ReadCommunity, deviceConfig.WriteCommunity);
-            AnsiConsole.MarkupLine($"[green]Device {i + 1}:[/] IP {ipAddress}, Modules: {(deviceConfig.ModuleIds.Length > 0 ? string.Join(", ", deviceConfig.ModuleIds) : "none")}, Read: {deviceConfig.ReadCommunity}, Write: {deviceConfig.WriteCommunity}");
+            var agent = new SnmpAgent(ipAddress, settings.Port, store, deviceConfig.ReadCommunity, deviceConfig.WriteCommunity);
+            AnsiConsole.MarkupLine($"[green]Device {i + 1}:[/] IP {ipAddress}:{settings.Port}, Modules: {(deviceConfig.ModuleIds.Length > 0 ? string.Join(", ", deviceConfig.ModuleIds) : "none")}, Read: {deviceConfig.ReadCommunity}, Write: {deviceConfig.WriteCommunity}");
 
             tasks.Add(agent.StartAsync());
         }

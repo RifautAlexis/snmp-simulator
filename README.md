@@ -49,6 +49,7 @@ Run examples from each publish folder:
 
 - `[config]`: path to the devices JSON array file (required)
 - `[ipaddress]`: base IP address (optional, default: `127.0.0.1`)
+- `[port]`: SNMP UDP port for all devices (optional, default: `161`)
 
 To simulate a single device, keep only one element in `devices.json`.
 
