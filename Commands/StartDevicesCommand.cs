@@ -18,6 +18,11 @@ public class DeviceConfig
     public string WriteCommunity { get; set; } = Constants.WriteCommunity;
 }
 
+[JsonSerializable(typeof(List<DeviceConfig>))]
+public partial class DeviceConfigContext : JsonSerializerContext
+{
+}
+
 public class StartDevicesSettings : CommandSettings
 {
     [CommandArgument(0, "[config]")]
@@ -52,7 +57,7 @@ public class StartDevicesCommand : AsyncCommand<StartDevicesSettings>
         {
             var json = File.ReadAllText(settings.ConfigFile);
             var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-            deviceConfigs = JsonSerializer.Deserialize<List<DeviceConfig>>(json, options) ?? new List<DeviceConfig>();
+            deviceConfigs = JsonSerializer.Deserialize(json, typeof(List<DeviceConfig>), new DeviceConfigContext(options)) as List<DeviceConfig> ?? new List<DeviceConfig>();
         }
         catch (Exception ex)
         {

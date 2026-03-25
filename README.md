@@ -8,6 +8,46 @@ A small SNMP simulator built on .NET and SharpSnmpLib.
 dotnet run -- startDevice --help
 ```
 
+Available commands:
+
+- `startDevice`
+- `startDevices`
+
+## Build and Distribute (Windows + Linux)
+
+Publish one folder per target OS/runtime. The command names stay the same (`startDevice`, `startDevices`).
+
+### Windows build
+
+```powershell
+dotnet publish .\SnmpSimulator.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o artifacts/publish/win-x64
+```
+
+### Linux build
+
+```powershell
+dotnet publish .\SnmpSimulator.csproj -c Release -r linux-x64 --self-contained true /p:PublishSingleFile=true -o artifacts/publish/linux-x64
+```
+
+Copy `config-devices/` next to each published binary before sharing.
+On Linux, if needed after extraction/copy, mark the binary executable with `chmod +x ./SnmpSimulator`.
+
+Run examples from each publish folder:
+
+### Windows run
+
+```powershell
+.\SnmpSimulator.exe startDevices .\config-devices\devices.json
+.\SnmpSimulator.exe startDevice --module-ids 1,2 --read-community public --write-community private
+```
+
+### Linux run
+
+```bash
+./SnmpSimulator startDevices ./config-devices/devices.json
+./SnmpSimulator startDevice --module-ids 1,2 --read-community public --write-community private
+```
+
 Optional command options:
 
 - `--module-ids <csv>`: comma-separated module IDs by slot order (example: `0,1,2,1`)
