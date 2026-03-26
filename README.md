@@ -36,18 +36,19 @@ Run examples from each publish folder:
 ### Windows run
 
 ```powershell
-.\SnmpSimulator.exe startDevices .\config-devices\devices.json
+.\SnmpSimulator.exe startDevices .\config-devices\devices.json .\config-devices
 ```
 
 ### Linux run
 
 ```bash
-./SnmpSimulator startDevices ./config-devices/devices.json
+./SnmpSimulator startDevices ./config-devices/devices.json ./config-devices
 ```
 
 `startDevices` arguments:
 
-- `[config]`: path to the devices JSON array file (required)
+- `<devicesConfig>`: path to the devices JSON array file (required)
+- `<oidsConfigDir>`: path to OIDs config directory containing `system.json` and `modules/*.json` (required)
 - `[ipaddress]`: base IP address (optional, default: `127.0.0.1`)
 - `[port]`: SNMP UDP port for all devices (optional, default: `161`)
 

@@ -25,16 +25,20 @@ public partial class DeviceConfigContext : JsonSerializerContext
 
 public class StartDevicesSettings : CommandSettings
 {
-    [CommandArgument(0, "<config>")]
-    [Description("Path to JSON configuration file containing device configurations")]
-    public string ConfigFile { get; init; } = "";
+    [CommandArgument(0, "<devicesConfig>")]
+    [Description("Path to JSON file containing device configurations")]
+    public string DevicesConfigFile { get; init; } = "";
 
-    [CommandArgument(1, "[ipaddress]")]
+    [CommandArgument(1, "<oidsConfigDir>")]
+    [Description("Path to OID configuration directory (expects system.json and modules/*.json)")]
+    public string OidsConfigDirectory { get; init; } = "";
+
+    [CommandArgument(2, "[ipaddress]")]
     [Description("Base IP address for devices (default: 127.0.0.1, last octet will be incremented)")]
     [DefaultValue("127.0.0.1")]
     public string IpAddress { get; init; } = "127.0.0.1";
 
-    [CommandArgument(2, "[port]")]
+    [CommandArgument(3, "[port]")]
     [Description("SNMP UDP port used by all devices (default: 161)")]
     [DefaultValue(161)]
     public int Port { get; init; } = 161;
@@ -44,15 +48,42 @@ public class StartDevicesCommand : AsyncCommand<StartDevicesSettings>
 {
     public override async Task<int> ExecuteAsync(CommandContext context, StartDevicesSettings settings, CancellationToken cancellation)
     {
-        if (string.IsNullOrWhiteSpace(settings.ConfigFile))
+        if (string.IsNullOrWhiteSpace(settings.DevicesConfigFile))
         {
-            AnsiConsole.MarkupLine("[red]Error:[/] Config file path is required");
+            AnsiConsole.MarkupLine("[red]Error:[/] Devices config file path is required");
             return 1;
         }
 
-        if (!File.Exists(settings.ConfigFile))
+        if (!File.Exists(settings.DevicesConfigFile))
         {
-            AnsiConsole.MarkupLine($"[red]Error:[/] Config file not found: {settings.ConfigFile}");
+            AnsiConsole.MarkupLine($"[red]Error:[/] Devices config file not found: {settings.DevicesConfigFile}");
+            return 1;
+        }
+
+        if (string.IsNullOrWhiteSpace(settings.OidsConfigDirectory))
+        {
+            AnsiConsole.MarkupLine("[red]Error:[/] OIDs config directory path is required");
+            return 1;
+        }
+
+        var configDirectory = Path.GetFullPath(settings.OidsConfigDirectory);
+        if (!Directory.Exists(configDirectory))
+        {
+            AnsiConsole.MarkupLine($"[red]Error:[/] OIDs config directory not found: {configDirectory}");
+            return 1;
+        }
+
+        var systemConfigPath = Path.Combine(configDirectory, "system.json");
+        if (!File.Exists(systemConfigPath))
+        {
+            AnsiConsole.MarkupLine($"[red]Error:[/] Missing system OID file: {systemConfigPath}");
+            return 1;
+        }
+
+        var modulesConfigPath = Path.Combine(configDirectory, "modules");
+        if (!Directory.Exists(modulesConfigPath))
+        {
+            AnsiConsole.MarkupLine($"[red]Error:[/] Missing modules directory: {modulesConfigPath}");
             return 1;
         }
 
@@ -60,7 +91,7 @@ public class StartDevicesCommand : AsyncCommand<StartDevicesSettings>
         List<DeviceConfig> deviceConfigs;
         try
         {
-            var json = File.ReadAllText(settings.ConfigFile);
+            var json = File.ReadAllText(settings.DevicesConfigFile);
             var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
             deviceConfigs = JsonSerializer.Deserialize(json, typeof(List<DeviceConfig>), new DeviceConfigContext(options)) as List<DeviceConfig> ?? new List<DeviceConfig>();
         }
@@ -76,8 +107,6 @@ public class StartDevicesCommand : AsyncCommand<StartDevicesSettings>
             return 1;
         }
 
-        var configDirectory = Path.GetFullPath(Constants.ConfigDirectory);
-        
         // Parse the base IP address
         if (!System.Net.IPAddress.TryParse(settings.IpAddress, out var baseIp))
         {
@@ -94,7 +123,8 @@ public class StartDevicesCommand : AsyncCommand<StartDevicesSettings>
         AnsiConsole.MarkupLine($"[yellow]Starting {deviceConfigs.Count} device(s)[/]");
         AnsiConsole.MarkupLine($"[yellow]Base IP address:[/] {settings.IpAddress}");
         AnsiConsole.MarkupLine($"[yellow]Port:[/] {settings.Port}");
-        AnsiConsole.MarkupLine($"[yellow]Device config found in directory:[/] {configDirectory}");
+        AnsiConsole.MarkupLine($"[yellow]Devices config file:[/] {settings.DevicesConfigFile}");
+        AnsiConsole.MarkupLine($"[yellow]OIDs config directory:[/] {configDirectory}");
 
         var tasks = new List<Task>();
 
