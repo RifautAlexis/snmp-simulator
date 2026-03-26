@@ -56,6 +56,8 @@ To simulate a single device, keep only one element in `devices.json`.
 
 ## Config Structure (`config-devices`)
 
+Detailed file format documentation is available in `config-devices/README.md`.
+
 The simulator reads:
 
 - `config-devices/system.json`
