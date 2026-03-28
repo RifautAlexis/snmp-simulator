@@ -1,0 +1,23 @@
+[
+  {
+    "moduleIDs": [1, 2],
+    "readCommunity": "public",
+    "writeCommunity": "private"
+  },
+  {
+    "moduleIDs": [1],
+    "readCommunity": "public",
+    "writeCommunity": "private"
+  },
+  {
+    "moduleIDs": [2],
+    "readCommunity": "public",
+    "writeCommunity": "private"
+  },
+  {
+    "moduleIDs": [0,1,2,1],
+    "readCommunity": "public",
+    "writeCommunity": "private"
+  }
+]
+
