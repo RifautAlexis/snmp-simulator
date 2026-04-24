@@ -1,20 +1,28 @@
 [
   {
+    "ipAddress":  "127.0.0.1",
+    "port":  161,
     "moduleIDs": [1, 2],
     "readCommunity": "public",
     "writeCommunity": "private"
   },
   {
+    "ipAddress": "127.0.0.2",
+    "port": 161,
     "moduleIDs": [1],
     "readCommunity": "public",
     "writeCommunity": "private"
   },
   {
+    "ipAddress": "127.0.0.3",
+    "port": 161,
     "moduleIDs": [2],
     "readCommunity": "public",
     "writeCommunity": "private"
   },
   {
+    "ipAddress": "127.0.0.4",
+    "port": 161,
     "moduleIDs": [0,1,2,1],
     "readCommunity": "public",
     "writeCommunity": "private"

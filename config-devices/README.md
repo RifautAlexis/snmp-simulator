@@ -36,6 +36,8 @@ Example with separated paths:
 
 Each item supports:
 
+- `ipaddress`: IP address (optional, default: `127.0.0.1`)
+- `port`: SNMP UDP port (optional, default: `161`)
 - `moduleIDs` (array of integers, required): ordered module IDs by slot
   - `0` means slot is empty
   - non-zero IDs must match a module file root `id`

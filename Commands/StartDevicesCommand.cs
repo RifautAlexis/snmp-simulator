@@ -8,14 +8,15 @@ namespace SnmpSimulator.Commands;
 
 public class DeviceConfig
 {
-    [JsonPropertyName("moduleIDs")]
-    public int[] ModuleIds { get; set; } = Array.Empty<int>();
+    [JsonPropertyName("ipAddress")] public string IpAddress { get; set; } = "127.0.0.1";
 
-    [JsonPropertyName("readCommunity")]
-    public string ReadCommunity { get; set; } = Constants.ReadCommunity;
+    [JsonPropertyName("port")] public int Port { get; set; } = 161;
 
-    [JsonPropertyName("writeCommunity")]
-    public string WriteCommunity { get; set; } = Constants.WriteCommunity;
+    [JsonPropertyName("moduleIDs")] public int[] ModuleIds { get; set; } = Array.Empty<int>();
+
+    [JsonPropertyName("readCommunity")] public string ReadCommunity { get; set; } = Constants.ReadCommunity;
+
+    [JsonPropertyName("writeCommunity")] public string WriteCommunity { get; set; } = Constants.WriteCommunity;
 }
 
 [JsonSerializable(typeof(List<DeviceConfig>))]
@@ -32,21 +33,12 @@ public class StartDevicesSettings : CommandSettings
     [CommandArgument(1, "<oidsConfigDir>")]
     [Description("Path to OID configuration directory (expects system.json and modules/*.json)")]
     public string OidsConfigDirectory { get; init; } = "";
-
-    [CommandArgument(2, "[ipaddress]")]
-    [Description("Base IP address for devices (default: 127.0.0.1, last octet will be incremented)")]
-    [DefaultValue("127.0.0.1")]
-    public string IpAddress { get; init; } = "127.0.0.1";
-
-    [CommandArgument(3, "[port]")]
-    [Description("SNMP UDP port used by all devices (default: 161)")]
-    [DefaultValue(161)]
-    public int Port { get; init; } = 161;
 }
 
 public class StartDevicesCommand : AsyncCommand<StartDevicesSettings>
 {
-    public override async Task<int> ExecuteAsync(CommandContext context, StartDevicesSettings settings, CancellationToken cancellation)
+    public override async Task<int> ExecuteAsync(CommandContext context, StartDevicesSettings settings,
+        CancellationToken cancellation)
     {
         if (string.IsNullOrWhiteSpace(settings.DevicesConfigFile))
         {
@@ -93,7 +85,9 @@ public class StartDevicesCommand : AsyncCommand<StartDevicesSettings>
         {
             var json = File.ReadAllText(settings.DevicesConfigFile);
             var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-            deviceConfigs = JsonSerializer.Deserialize(json, typeof(List<DeviceConfig>), new DeviceConfigContext(options)) as List<DeviceConfig> ?? new List<DeviceConfig>();
+            deviceConfigs =
+                JsonSerializer.Deserialize(json, typeof(List<DeviceConfig>), new DeviceConfigContext(options)) as
+                    List<DeviceConfig> ?? new List<DeviceConfig>();
         }
         catch (Exception ex)
         {
@@ -108,21 +102,22 @@ public class StartDevicesCommand : AsyncCommand<StartDevicesSettings>
         }
 
         // Parse the base IP address
-        if (!System.Net.IPAddress.TryParse(settings.IpAddress, out var baseIp))
+        foreach (var deviceConfig in deviceConfigs)
         {
-            AnsiConsole.MarkupLine($"[red]Error:[/] Invalid IP address: {settings.IpAddress}");
-            return 1;
-        }
-
-        if (settings.Port is < 1 or > 65535)
-        {
-            AnsiConsole.MarkupLine($"[red]Error:[/] Invalid port: {settings.Port}. Expected range is 1-65535");
-            return 1;
+            if (!System.Net.IPAddress.TryParse(deviceConfig.IpAddress, out var ip))
+            {
+                AnsiConsole.MarkupLine($"[red]Error:[/] Invalid IP address: {deviceConfig.IpAddress}");
+                return 1;
+            }
+            
+            if (deviceConfig.Port is < 1 or > 65535)
+            {
+                AnsiConsole.MarkupLine($"[red]Error:[/] Invalid port: {deviceConfig.Port}. Expected range is 1-65535");
+                return 1;
+            }
         }
 
         AnsiConsole.MarkupLine($"[yellow]Starting {deviceConfigs.Count} device(s)[/]");
-        AnsiConsole.MarkupLine($"[yellow]Base IP address:[/] {settings.IpAddress}");
-        AnsiConsole.MarkupLine($"[yellow]Port:[/] {settings.Port}");
         AnsiConsole.MarkupLine($"[yellow]Devices config file:[/] {settings.DevicesConfigFile}");
         AnsiConsole.MarkupLine($"[yellow]OIDs config directory:[/] {configDirectory}");
 
@@ -131,12 +126,15 @@ public class StartDevicesCommand : AsyncCommand<StartDevicesSettings>
         for (int i = 0; i < deviceConfigs.Count; i++)
         {
             var deviceConfig = deviceConfigs[i];
-            var ipAddress = IncrementLastOctet(settings.IpAddress, i);
+            var ipAddress = deviceConfigs[i].IpAddress;
+            var port = deviceConfigs[i].Port;   
             var store = new SnmpStore();
             LoadConfigIntoStore(configDirectory, deviceConfig.ModuleIds, store);
 
-            var agent = new SnmpAgent(ipAddress, settings.Port, store, deviceConfig.ReadCommunity, deviceConfig.WriteCommunity);
-            AnsiConsole.MarkupLine($"[green]Device {i + 1}:[/] IP {ipAddress}:{settings.Port}, Modules: {(deviceConfig.ModuleIds.Length > 0 ? string.Join(", ", deviceConfig.ModuleIds) : "none")}, Read: {deviceConfig.ReadCommunity}, Write: {deviceConfig.WriteCommunity}");
+            var agent = new SnmpAgent(ipAddress, port, store, deviceConfig.ReadCommunity,
+                deviceConfig.WriteCommunity);
+            AnsiConsole.MarkupLine(
+                $"[green]Device {i + 1}:[/] IP {ipAddress}:{port}, Modules: {(deviceConfig.ModuleIds.Length > 0 ? string.Join(", ", deviceConfig.ModuleIds) : "none")}, Read: {deviceConfig.ReadCommunity}, Write: {deviceConfig.WriteCommunity}");
 
             tasks.Add(agent.StartAsync());
         }
@@ -146,29 +144,9 @@ public class StartDevicesCommand : AsyncCommand<StartDevicesSettings>
         return 0;
     }
 
-    private string IncrementLastOctet(string ipAddress, int increment)
-    {
-        var parts = ipAddress.Split('.');
-        if (parts.Length != 4 || !int.TryParse(parts[3], out var lastOctet))
-        {
-            throw new ArgumentException($"Invalid IP address format: {ipAddress}");
-        }
-
-        var newLastOctet = lastOctet + increment;
-        if (newLastOctet > 255)
-        {
-            throw new ArgumentException($"IP address last octet would exceed 255: {newLastOctet}");
-        }
-
-        return $"{parts[0]}.{parts[1]}.{parts[2]}.{newLastOctet}";
-    }
-
     private void LoadConfigIntoStore(string configDirectory, int[] moduleIds, SnmpStore store)
     {
         var objects = DeviceConfigLoader.LoadFromConfigDevice(configDirectory, moduleIds);
         store.ReplaceAll(objects);
     }
 }
-
-
-
